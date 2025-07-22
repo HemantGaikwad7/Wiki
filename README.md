@@ -32,7 +32,8 @@ A modern, responsive web application for creating and managing a knowledge base 
 - **Flask-CORS**: Cross-origin resource sharing support
 
 ### Frontend
-- **Alpine.js**: Lightweight reactive framework
+- **Alpine.js**: Lightweight reactive framework(main version)
+- **Angular.js**: MVC framework (alternative version)
 - **Marked.js**: Markdown parser and renderer
 - **HTML5 & CSS3**: Modern web standards
 - **Vanilla JavaScript**: No heavy framework dependencies
@@ -71,6 +72,7 @@ Open your web browser and navigate to:
 - Main interface: `http://127.0.0.1:5000`
 - Alternative view: `http://127.0.0.1:5000/wiki`
 - Open with Live Server "index.html" file
+- Angular.js version: `http://127.0.0.1:5000/angular`
 
 ## 📁 Project Structure
 
@@ -79,6 +81,7 @@ Wiki/
 ├── app.py              # Flask backend application
 ├── index.html          # Main frontend interface
 ├── wiki.html           # Alternative frontend view
+├── angular-wiki.html   # Angular.js frontend version
 ├── requirements.txt    # Python dependencies
 ├── README.md          # Project documentation
 └── instance/
@@ -155,6 +158,26 @@ The application supports standard Markdown syntax:
 - **Lists**: `- item` or `1. item`
 - **Code**: `` `inline code` `` or ``` for code blocks
 - **Blockquotes**: `> quote text`
+
+## 🅰️ Angular.js Version
+
+The project includes an alternative Angular.js implementation that provides the same functionality with additional features:
+
+### Additional Features in Angular.js Version:
+- **Form Validation**: Real-time validation with error messages
+- **Loading States**: Visual feedback during API operations
+- **Success/Error Messages**: User-friendly notifications
+- **Form State Management**: Disabled buttons during submission
+- **Live Preview**: Real-time markdown preview during editing
+
+### Key Differences:
+- **Two-way Data Binding**: Automatic synchronization between model and view
+- **Dependency Injection**: Better code organization and testability
+- **Form Validation**: Built-in form validation with error handling
+- **State Management**: More robust handling of loading and error states
+
+### Access the Angular Version:
+Navigate to `http://127.0.0.1:5000/angular` to use the Angular.js implementation.
 
 ## 🔍 API Usage Examples
 
