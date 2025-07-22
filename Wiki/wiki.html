@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" x-data="wikiApp()" @load="loadArticles()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Base Wiki</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f7f7f7;
+      color: #333;
+    }
+    header {
+      background: #4CAF50; color: white;
+      padding: 1rem; text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto; padding: 1rem;
+      background: white; border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-bar, .new-article {
+      margin-bottom: 1rem; display: flex; gap: 0.5rem;
+    }
+    .search-bar input, .new-article input {
+      flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;
+    }
+    .btn {
+      padding: 0.5rem 1rem; border: none; border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-primary { background: #4CAF50; color: white; }
+    .btn-secondary { background: #2196F3; color: white; }
+    .btn-danger { background: #f44336; color: white; }
+    .article {
+      border-bottom: 1px solid #ddd; padding: 1rem 0;
+    }
+    .category {
+      display: inline-block; background: #eee;
+      color: #555; padding: 0.2rem 0.5rem;
+      border-radius: 3px; margin-left: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .editor textarea {
+      width: 100%; height: 150px;
+      border: 1px solid #ccc; border-radius: 4px;
+      margin-top: 0.5rem; padding: 0.5rem;
+    }
+    .preview {
+      margin-top: 1rem; background: #f9f9f9;
+      border: 1px solid #ddd; padding: 1rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📖 Knowledge Base Wiki</h1>
+  </header>
+  <div class="container">
+    <!-- Search and Filter -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search articles..." x-model="searchQuery">
+      <select x-model="selectedCategory">
+        <option value="">All Categories</option>
+        <template x-for="cat in uniqueCategories">
+          <option x-text="cat"></option>
+        </template>
+      </select>
+    </div>
+
+    <!-- Add New Article -->
+    <div class="new-article">
+      <input type="text" placeholder="Article Title" x-model="newArticle.title">
+      <input type="text" placeholder="Category" x-model="newArticle.category">
+      <button class="btn btn-primary" @click="addArticle()">Add Article</button>
+    </div>
+
+    <!-- Article List -->
+    <template x-for="(article, index) in filteredArticles" :key="index">
+      <div class="article">
+        <h2 x-text="article.title"></h2>
+        <span class="category" x-text="article.category"></span>
+        <div x-html="marked.parse(article.content)"></div>
+
+        <!-- Edit/Delete Buttons -->
+        <div style="margin-top: 0.5rem;">
+          <button class="btn btn-secondary" @click="editArticle(index)">Edit</button>
+          <button class="btn btn-danger" @click="deleteArticle(index)">Delete</button>
+        </div>
+
+        <!-- Inline Editor -->
+        <div class="editor" x-show="editingIndex === index">
+          <textarea x-model="article.content"></textarea>
+          <button class="btn btn-primary" @click="saveEdit()">Save</button>
+          <button class="btn" @click="cancelEdit()">Cancel</button>
+          <div class="preview" x-html="marked.parse(article.content)"></div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <script>
+    function wikiApp() {
+      return {
+        searchQuery: '',
+        selectedCategory: '',
+        newArticle: { title: '', category: '', content: 'Write your content here in **Markdown**...' },
+        articles: [],
+        editingIndex: null,
+
+        get filteredArticles() {
+          return this.articles.filter(a => {
+            const matchesTitle = a.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            const matchesCategory = this.selectedCategory ? a.category === this.selectedCategory : true;
+            return matchesTitle && matchesCategory;
+          });
+        },
+        get uniqueCategories() {
+          return [...new Set(this.articles.map(a => a.category))];
+        },
+        loadArticles() {
+          const saved = localStorage.getItem('wikiArticles');
+          if (saved) {
+            this.articles = JSON.parse(saved);
+          } else {
+            // Seed with some sample data
+            this.articles = [
+              { title: "Getting Started", category: "General", content: "Welcome to the **Knowledge Base**! Start by adding articles." },
+              { title: "Markdown Tips", category: "Docs", content: "- Use **bold**\n- Use *italic*\n- Create lists like this one." }
+            ];
+            this.saveArticles();
+          }
+        },
+        saveArticles() {
+          localStorage.setItem('wikiArticles', JSON.stringify(this.articles));
+        },
+        addArticle() {
+          if (this.newArticle.title && this.newArticle.category) {
+            this.articles.push({ ...this.newArticle });
+            this.saveArticles();
+            this.newArticle.title = '';
+            this.newArticle.category = '';
+            this.newArticle.content = 'Write your content here in **Markdown**...';
+          }
+        },
+        deleteArticle(index) {
+          if (confirm("Delete this article?")) {
+            this.articles.splice(index, 1);
+            this.saveArticles();
+          }
+        },
+        editArticle(index) {
+          this.editingIndex = index;
+        },
+        saveEdit() {
+          this.saveArticles();
+          this.editingIndex = null;
+        },
+        cancelEdit() {
+          this.editingIndex = null;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

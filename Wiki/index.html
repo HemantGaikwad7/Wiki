@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" x-data="wikiApp()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Base Wiki</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-bar input, .search-bar select {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .search-bar input:focus, .search-bar select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .new-article {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .new-article input, .new-article textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    .new-article textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .new-article input:focus, .new-article textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .article {
+      background: white;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .article:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .article h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      border-bottom: 2px solid #ecf0f1;
+      padding-bottom: 0.5rem;
+    }
+
+    .category {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .editor {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px solid #e9ecef;
+    }
+
+    .editor textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+
+    .preview {
+      background: white;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      margin-top: 1rem;
+    }
+
+    .preview h1, .preview h2, .preview h3 {
+      color: #2c3e50;
+    }
+
+    .preview code {
+      background: #f1f3f4;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .preview pre {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      overflow-x: auto;
+    }
+
+    .preview blockquote {
+      border-left: 4px solid #667eea;
+      margin: 1rem 0;
+      padding-left: 1rem;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📖 Knowledge Base Wiki</h1>
+  </header>
+  <div class="container">
+    <!-- Search and Filter -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search articles..." x-model="searchQuery">
+      <select x-model="selectedCategory">
+        <option value="">All Categories</option>
+        <template x-for="cat in uniqueCategories">
+          <option x-text="cat"></option>
+        </template>
+      </select>
+    </div>
+
+    <!-- Add New Article -->
+    <div class="new-article">
+      <input type="text" placeholder="Article Title" x-model="newArticle.title">
+      <input type="text" placeholder="Category" x-model="newArticle.category">
+      <textarea placeholder="Write your content here in **Markdown**..." x-model="newArticle.content"></textarea>
+      <button class="btn btn-primary" @click="addArticle()">Add Article</button>
+    </div>
+
+    <!-- Article List -->
+    <template x-for="(article, index) in filteredArticles" :key="article.id">
+      <div class="article">
+        <h2 x-text="article.title"></h2>
+        <span class="category" x-text="article.category"></span>
+        <div x-html="marked.parse(article.content)"></div>
+
+        <!-- Edit/Delete Buttons -->
+        <div style="margin-top: 0.5rem;">
+          <button class="btn btn-secondary" @click="editArticle(article)">Edit</button>
+          <button class="btn btn-danger" @click="deleteArticle(article.id)">Delete</button>
+        </div>
+
+        <!-- Inline Editor -->
+        <div class="editor" x-show="editingArticle && editingArticle.id === article.id">
+          <textarea x-model="editingArticle.content"></textarea>
+          <button class="btn btn-primary" @click="saveEdit()">Save</button>
+          <button class="btn" @click="cancelEdit()">Cancel</button>
+          <div class="preview" x-html="marked.parse(editingArticle.content)"></div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <script>
+    function wikiApp() {
+      return {
+        apiBase: 'http://127.0.0.1:5000/api/articles',
+        articles: [],
+        searchQuery: '',
+        selectedCategory: '',
+        newArticle: { title: '', category: '', content: 'Write your content here in **Markdown**...' },
+        editingArticle: null,
+
+        // Initialize the app
+        init() {
+          this.loadArticles();
+        },
+
+        get filteredArticles() {
+          return this.articles.filter(a => {
+            const matchesTitle = a.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            const matchesCategory = this.selectedCategory ? a.category === this.selectedCategory : true;
+            return matchesTitle && matchesCategory;
+          });
+        },
+        get uniqueCategories() {
+          return [...new Set(this.articles.map(a => a.category))];
+        },
+
+        async loadArticles() {
+          try {
+            const res = await fetch(this.apiBase);
+            this.articles = await res.json();
+          } catch (error) {
+            console.error('Error loading articles:', error);
+            alert('Error loading articles. Make sure the Flask server is running.');
+          }
+        },
+
+        async addArticle() {
+          if (!this.newArticle.title || !this.newArticle.category) {
+            alert('Please fill in title and category');
+            return;
+          }
+          
+          try {
+            const res = await fetch(this.apiBase, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(this.newArticle)
+            });
+            const article = await res.json();
+            this.articles.push(article);
+            this.newArticle = { title: '', category: '', content: 'Write your content here in **Markdown**...' };
+            alert('Article added successfully!');
+          } catch (error) {
+            console.error('Error adding article:', error);
+            alert('Error adding article. Please try again.');
+          }
+        },
+
+        editArticle(article) {
+          this.editingArticle = { ...article };
+        },
+
+        async saveEdit() {
+          try {
+            const res = await fetch(`${this.apiBase}/${this.editingArticle.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(this.editingArticle)
+            });
+            const updated = await res.json();
+            const index = this.articles.findIndex(a => a.id === updated.id);
+            this.articles[index] = updated;
+            this.editingArticle = null;
+            alert('Article updated successfully!');
+          } catch (error) {
+            console.error('Error updating article:', error);
+            alert('Error updating article. Please try again.');
+          }
+        },
+
+        cancelEdit() {
+          this.editingArticle = null;
+        },
+
+        async deleteArticle(id) {
+          if (!confirm('Delete this article?')) return;
+          
+          try {
+            await fetch(`${this.apiBase}/${id}`, { method: 'DELETE' });
+            this.articles = this.articles.filter(a => a.id !== id);
+            alert('Article deleted successfully!');
+          } catch (error) {
+            console.error('Error deleting article:', error);
+            alert('Error deleting article. Please try again.');
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
