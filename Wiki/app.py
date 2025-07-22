@@ -84,6 +84,11 @@ def index():
 def wiki():
     with open('wiki.html', 'r', encoding='utf-8') as f:
         return f.read()
+        
+@app.route('/angular')
+def angular_wiki():
+    with open('angular-wiki.html', 'r', encoding='utf-8') as f:
+        return f.read()
 
 if __name__ == '__main__':
     app.run(debug=True)
