@@ -1,5 +1,14 @@
 # Wiki
 # 📖 Knowledge Base Wiki
+<img width="1328" height="715" alt="image" src="https://github.com/user-attachments/assets/996fdfb4-b54f-49f5-91b7-dbacf944e9fe" />
+
+<img width="1328" height="528" alt="image" src="https://github.com/user-attachments/assets/273cc064-b71c-4f37-b27a-ff6fe396db54" />
+
+<img width="1311" height="704" alt="image" src="https://github.com/user-attachments/assets/073904ee-dc07-4627-8e92-842f2cec34b7" />
+
+<img width="1332" height="703" alt="image" src="https://github.com/user-attachments/assets/7fca462e-8ccc-4e38-a0e4-91257c8c71c7" />
+
+
 
 A modern, responsive web application for creating and managing a knowledge base with articles organized by categories. Built with Flask backend and Alpine.js frontend with Markdown support.
 
